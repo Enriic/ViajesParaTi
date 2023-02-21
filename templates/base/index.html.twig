@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello BaseController!{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+{% block body %}
+
+  <form action="{{ path('addProvider') }}" class="form" method="post">
+    <label for="name">Nombre:</label>
+    <input type="text" name="name" id="name" required>
+    <br>
+
+    <label for="email">Correo:</label>
+    <input type="email" name="email" id="email" required>
+    <br>
+
+    <label for="phone">Teléfono:</label>
+    <input type="tel" name="phone" id="phone" required>
+    <br>
+
+    <label for="type">Tipo:</label>
+    <select name="type" id="type">
+        <option value="hotel">Hotel</option>
+        <option value="pista">Pista</option>
+        <option value="complemento">Complemento</option>
+    </select>
+    <br>
+
+    <label id="active-label" for="active">Activo:</label>
+    <input type="checkbox" name="active" id="active">
+    <br>
+
+
+    <input type="submit" value="Crear proveedor">
+</form>
+
+
+{% endblock %}
+
