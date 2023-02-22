@@ -11,14 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Provider
 {
 
-    public function construct__($name,$email,$phone,$type,$intro_date,$active){
-        $this->name = $name;
-        $this->email = $email;
-        $this->phone = $phone;
-        $this->type = $type;
-        $this->intro_date = $intro_date;
-        $this->active = $active;
-    }
+  
 
 
     /**
@@ -116,9 +109,9 @@ class Provider
         return $this;
     }
 
-    public function getIntroDate(): ?\DateTimeInterface
+    public function getIntroDate(): ?String
     {
-        return $this->intro_date;
+        return $this->intro_date->format('Y-m-d h:i:s');
     }
 
     public function setIntroDate(\DateTimeInterface $intro_date): self
@@ -128,9 +121,9 @@ class Provider
         return $this;
     }
 
-    public function getUpdateDate(): ?\DateTimeInterface
+    public function getUpdateDate(): ?String
     {
-        return $this->update_date;
+        return $this->update_date->format('Y-m-d h:i:s');
     }
 
     public function setUpdateDate(?\DateTimeInterface $update_date): self
@@ -145,7 +138,7 @@ class Provider
         return $this->active;
     }
 
-    public function setActive(bool $active): self
+    public function setActive(bool $active=false): self
     {
         $this->active = $active;
 

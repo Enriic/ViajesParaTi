@@ -9,6 +9,10 @@ form {
     border-radius: 2px;
     border-color: #ced4da;
 }
+
+form *{
+    margin-bottom: 14px;
+}
   
 label {
     display: block;
@@ -24,13 +28,45 @@ input, select {
     border-radius: 0.25rem;
 } 
 
-#active {
+.form-active{
     width: 10px;
     margin-left: 4px;
     transform: scale(1.8);
     border: 1px solid #ced4da;
-    border-radius: 0.25rem;
+    border-radius: 0.25rem;    
 }
+
+h3{
+    padding: 1rem 1rem 0.4rem 1rem ;
+}
+
+.card {
+    margin-bottom: 10px;
+    max-height: 60px;
+    position: relative;
+}
+
+.card > p {
+    text-size-adjust: 10px;
+}
+
+.container {
+    margin-top: 30px;
+}
+
+.form-base{
+    background-color: transparent;
+}
+
+.group-btn{
+    float: right;
+    top: 50%;
+    transform: translateY(-25%);
+}
+
+
+
+
 
 
 

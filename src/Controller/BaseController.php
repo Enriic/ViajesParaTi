@@ -5,6 +5,10 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Provider;
@@ -19,74 +23,184 @@ class BaseController extends AbstractController
      */
     public function addProvider(Request $req,EntityManagerInterface $em): Response
     {
-        if($req->isMethod('POST')){
-            $name = $req->request->get('name');
-            $email = $req->request->get('email');
-            $phone = $req->request->get('phone');
-            $type = $req->request->get('type');
-            $active = $req->request->get('active');
-            $intro_date = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
 
-            $provider = new Provider();
-            $provider->setName($name);
-            $provider->setEmail($email);
-            $provider->setPhone($phone);
-            $provider->setType($type);
-            $provider->setActive($active);
-            $provider->setIntroDate($intro_date);
+        $provider = new Provider();
+        $form = $this->createFormBuilder(($provider))
+            ->add('Name',TextType::class,[
+                'attr'=>[
+                    'class' => 'form-name'
+                ]
+            ])
+            ->add('Email',TextType::class,[
+                'attr'=>[
+                    'class' => 'form-email'
+                ]
+                
+            ])
+            ->add('Phone',TextType::class,[
+                'attr'=>[
+                    'class' => 'form-phone'
+                ]
+            ])
+            ->add('Type', ChoiceType::class, [
 
-            
-            $em->persist($provider);
-            $em->flush();
-            
-        }
+                'choices' => [
+                    'Hotel' => 'HOTEL',
+                    'Pista' => 'PISTA',
+                    'Complemento' => 'COMPLEMENTO',
+                ],
+                'expanded' => false,
+            ],[
+                'attr'=>[
+                    'class' => 'form-type'
+                ]
+                
+            ])
+            ->add('Active', CheckboxType::class, [
+                'label' => 'Activo',
+                'required' => false, 
+                'attr'=>[
+                     'class' => 'form-active'
+                ],
+                'label_attr' => [
+                    'class' => 'checkbox-label',
+                ],
+            ])
+            ->add('Crear Proveedor',SubmitType::class, ['label' => 'Crear Proveedor'],[
+                'attr'=>[
+                     'class' => 'form-btn'
+                ]
+            ])
+            ->getForm();
         
-        return $this->render('base/index.html.twig');
+        
+            if($req->isMethod('POST')){
+
+                $form->handleRequest($req);
+                $provider=$form->getData();
+
+                $intro_date = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
+                $provider->setIntroDate($intro_date);
+                
+                $em->persist($provider);
+                $em->flush();
+
+                return $this->redirectToRoute('getProviders');
+            }
+        
+        return $this->render('base/index.html.twig',[
+            'form'=>$form->createView(),
+        ]);
     }
 
     /**
-     * @Route("/get", name="getAllProviders")
+     * @Route("/", name="getProviders")
      */
-    public function getAllProviders(): Response
+    public function getProviders(EntityManagerInterface $em): Response
     {
-        $em = $this->getDoctrine().getManager();
         $providers = $em->getRepository(Provider::class)->findAll();
 
-        return this->render('base/index.html.twig');
+        return $this->render('base/listproviders.html.twig',[ 
+            'providers' => $providers
+        ]);
     }
 
      /**
      * @Route("/update/{id}", name="updateProvider")
      */
-    public function updateProvider(int $id): Response
+    public function updateProvider(int $id,EntityManagerInterface $em,Request $req): Response
     {
-        $em = $this->getDoctrine().getManager();
         $provider = $em->getRepository(Provider::class)->find($id);
-        
         if (!$provider) {
             throw $this->createNotFoundException(
                 'No product found for id '.$id
             );
         }
 
-        em->flush();
+        
+        $form = $this->createFormBuilder(($provider))
+            ->add('Name',TextType::class,[
+                'attr'=>[
+                    'class' => 'form-name'
+                ]
+            ])
+            ->add('Email',TextType::class,[
+                'attr'=>[
+                    'class' => 'form-email'
+                ]
+                
+            ])
+            ->add('Phone',TextType::class,[
+                'attr'=>[
+                    'class' => 'form-phone'
+                ]
+            ])
+            ->add('Type', ChoiceType::class, [
+
+                'choices' => [
+                    'Hotel' => 'HOTEL',
+                    'Pista' => 'PISTA',
+                    'Complemento' => 'COMPLEMENTO',
+                ],
+                'expanded' => false,
+            ],[
+                'attr'=>[
+                    'class' => 'form-type'
+                ]
+                
+            ])
+            ->add('Active', CheckboxType::class, [
+                'label' => 'Activo',
+                'required' => false, 
+                'attr'=>[
+                     'class' => 'form-active'
+                ],
+                'label_attr' => [
+                    'class' => 'checkbox-label',
+                ],
+            ])
+            ->add('Actualizar Proveedor',SubmitType::class, ['label' => 'Actualizar Proveedor'],[
+                'attr'=>[
+                     'class' => 'form-btn'
+                ]
+            ])
+            ->getForm();
+        
+            if($req->isMethod('POST')){
+
+                $form->handleRequest($req);
+                $provider=$form->getData();
+
+                $update_date = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
+                $provider->setUpdateDate($update_date);
+                
+                $em->persist($provider);
+                $em->flush();
+
+                return $this->redirectToRoute('getProviders');
+            }
+
+        return $this->render('base/index.html.twig',[
+            'form'=>$form->createView(),
+        ]);
     }
 
     /**
      * @Route("/remove/{id}", name="removeProvider")
      */
-    public function removeProvider(int $id): Response
+    public function removeProvider(int $id,EntityManagerInterface $em): Response
     {
-        $em = $this->getDoctrine().getManager();
         $provider = $em->getRepository(Provider::class)->find($id);
         $em->remove($provider);
+        $em->flush();
+
+        $providers = $em->getRepository(Provider::class)->findAll();
+
+        return $this->redirectToRoute('getProviders',[ 
+            'providers' => $providers
+        ]);
+
     }
 
-    /**
-     * @Route("/", name="base")
-     */
-    public function index(): Response
-    {
-        return $this->render('base/index.html.twig');
-    }
+    
 }
