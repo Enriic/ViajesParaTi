@@ -47,6 +47,18 @@ class ProviderRepository extends ServiceEntityRepository
         }
     }
 
+    
+    /**
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function update(bool $flush = true): void
+    {
+        if ($flush) {
+            $this->_em->flush();
+        }
+    }
+
     // /**
     //  * @return Provider[] Returns an array of Provider objects
     //  */

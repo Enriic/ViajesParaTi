@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\ProviderRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,13 +19,19 @@ use DateTimeImmutable;
 class BaseController extends AbstractController
 {
 
+    private $providerRepository;
+
+    public function __construct (ProviderRepository $providerRepository){
+        $this->providerRepository = $providerRepository;
+    }
+
 
     /**
      * @Route("/", name="getProviders")
      */
-    public function getProviders(EntityManagerInterface $em): Response
+    public function getProviders(): Response
     {
-        $providers = $em->getRepository(Provider::class)->findAll();
+        $providers = $this->providerRepository->findAll();
 
         return $this->render('base/listproviders.html.twig',[ 
             'providers' => $providers
@@ -35,7 +42,7 @@ class BaseController extends AbstractController
     /**
      * @Route("/add", name="addProvider")
      */
-    public function addProvider(Request $req,EntityManagerInterface $em): Response
+    public function addProvider(Request $req): Response
     {
 
         $provider = new Provider();
@@ -96,8 +103,7 @@ class BaseController extends AbstractController
                 $intro_date = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
                 $provider->setIntroDate($intro_date);
                 
-                $em->persist($provider);
-                $em->flush();
+                $this->providerRepository->add($provider);
 
                 return $this->redirectToRoute('getProviders');
             }
@@ -112,9 +118,9 @@ class BaseController extends AbstractController
      /**
      * @Route("/update/{id}", name="updateProvider")
      */
-    public function updateProvider(int $id,EntityManagerInterface $em,Request $req): Response
+    public function updateProvider(int $id,Request $req): Response
     {
-        $provider = $em->getRepository(Provider::class)->find($id);
+        $provider = $this->providerRepository->find($id);
         if (!$provider) {
             throw $this->createNotFoundException(
                 'No product found for id '.$id
@@ -178,8 +184,7 @@ class BaseController extends AbstractController
                 $update_date = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
                 $provider->setUpdateDate($update_date);
                 
-                $em->persist($provider);
-                $em->flush();
+                $this->providerRepository->update();
 
                 return $this->redirectToRoute('getProviders');
             }
@@ -192,17 +197,18 @@ class BaseController extends AbstractController
     /**
      * @Route("/remove/{id}", name="removeProvider")
      */
-    public function removeProvider(int $id,EntityManagerInterface $em): Response
+    public function removeProvider(int $id): Response
     {
-        $provider = $em->getRepository(Provider::class)->find($id);
-        $em->remove($provider);
-        $em->flush();
+        $provider = $this->providerRepository->find($id);
+        $this->providerRepository->remove($provider);
 
-        $providers = $em->getRepository(Provider::class)->findAll();
+        // $providers = $em->getRepository(Provider::class)->findAll();
 
-        return $this->redirectToRoute('getProviders',[ 
-            'providers' => $providers
-        ]);
+        // return $this->redirectToRoute('getProviders',[ 
+        //     'providers' => $providers
+        // ]);
+
+        return $this->redirectToRoute('getProviders');
 
     }
 
