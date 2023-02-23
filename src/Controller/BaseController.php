@@ -18,6 +18,20 @@ use DateTimeImmutable;
 class BaseController extends AbstractController
 {
 
+
+    /**
+     * @Route("/", name="getProviders")
+     */
+    public function getProviders(EntityManagerInterface $em): Response
+    {
+        $providers = $em->getRepository(Provider::class)->findAll();
+
+        return $this->render('base/listproviders.html.twig',[ 
+            'providers' => $providers
+        ]);
+    }
+
+
     /**
      * @Route("/add", name="addProvider")
      */
@@ -93,17 +107,7 @@ class BaseController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/", name="getProviders")
-     */
-    public function getProviders(EntityManagerInterface $em): Response
-    {
-        $providers = $em->getRepository(Provider::class)->findAll();
 
-        return $this->render('base/listproviders.html.twig',[ 
-            'providers' => $providers
-        ]);
-    }
 
      /**
      * @Route("/update/{id}", name="updateProvider")

@@ -11,9 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Provider
 {
 
-  
-
-
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

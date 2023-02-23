@@ -10,5 +10,9 @@ services:
 ###> doctrine/doctrine-bundle ###
   database:
     ports:
-      - "5432"
+      - "3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 
+      MYSQL_DATABASE: viajesparatidb
+    image: mysql
 ###< doctrine/doctrine-bundle ###

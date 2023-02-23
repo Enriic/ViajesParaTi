@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Proveedores!{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+{% endblock %}
+{% block body %}
+<div id="app">
+    <div class="container">
+    <div class="top">
+        <h3 class="display-6 d-inline">Mi lista de proveedores</h3>
+        <a href = "{{ path('addProvider') }}">
+        <button class="btn btn-success d-inline">Añadir</button>
+        </a>
+    </div>
+    <hr>
+    {% if providers!=null %}
+    <ul class="list-group">
+        {% for prov in providers %}
+		<div class="card">
+            <div class="card-body">
+                <h5 class="card-title d-inline">{{ prov.name }}</h5>
+                <span>&emsp;</span>
+                <p class="card-text d-inline">{{ prov.email }}</p>
+                <span>&emsp;</span>
+                <p class="card-text d-inline">{{ prov.introDate }}</p>
+                <span>&emsp;</span>
+                <p class="card-text d-inline">{{ prov.type | capitalize }}</p>
+                <span>&emsp;</span>
+                <p class="card-text d-inline">{{ prov.phone }}</p>
+                <span>&emsp;</span>
+                {% if prov.active %}
+                <p style="color: green" class="card-text d-inline">ACTIVO</p>
+                {% else %}
+                <p style="color: red"class="card-text d-inline">INACTIVO</p>
+                {% endif %}
+                <div class="group-btn">             
+                    <form class="form-base d-inline" action="{{ path('updateProvider', { id: prov.id }) }}" method="POST">
+                        <input type="hidden" name="_method" value="PUT">
+                        <button type="submit" class="btn btn-primary">Editar</button>
+                    </form>
+                    
+                    <form class="form-base d-inline" action="{{ path('removeProvider', { id: prov.id }) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este proveedor?')">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </ul>
+    {% else %}
+        <h4>Aún no hay proveedores, puedes añadirlos con el botón "AÑADIR"</h4>
+    {% endif %}
+	</div>
+</div>
+
+
+
+{% endblock %}
+
