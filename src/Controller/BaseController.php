@@ -11,10 +11,9 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Provider;
 use DateTimeImmutable;
-
+use Symfony\Component\Form\Form;
 
 class BaseController extends AbstractController
 {
@@ -46,53 +45,7 @@ class BaseController extends AbstractController
     {
 
         $provider = new Provider();
-        $form = $this->createFormBuilder(($provider))
-            ->add('Name',TextType::class,[
-                'attr'=>[
-                    'class' => 'form-name'
-                ]
-            ])
-            ->add('Email',TextType::class,[
-                'attr'=>[
-                    'class' => 'form-email'
-                ]
-                
-            ])
-            ->add('Phone',TextType::class,[
-                'attr'=>[
-                    'class' => 'form-phone'
-                ]
-            ])
-            ->add('Type', ChoiceType::class, [
-
-                'choices' => [
-                    'Hotel' => 'HOTEL',
-                    'Pista' => 'PISTA',
-                    'Complemento' => 'COMPLEMENTO',
-                ],
-                'expanded' => false,
-            ],[
-                'attr'=>[
-                    'class' => 'form-type'
-                ]
-                
-            ])
-            ->add('Active', CheckboxType::class, [
-                'label' => 'Activo',
-                'required' => false, 
-                'attr'=>[
-                     'class' => 'form-active'
-                ],
-                'label_attr' => [
-                    'class' => 'checkbox-label',
-                ],
-            ])
-            ->add('Crear Proveedor',SubmitType::class, ['label' => 'Crear Proveedor'],[
-                'attr'=>[
-                     'class' => 'form-btn'
-                ]
-            ])
-            ->getForm();
+        $form = $this->makeForm("Crear Proveedor",$provider);
         
         
             if($req->isMethod('POST')){
@@ -126,55 +79,7 @@ class BaseController extends AbstractController
                 'No product found for id '.$id
             );
         }
-
-        
-        $form = $this->createFormBuilder(($provider))
-            ->add('Name',TextType::class,[
-                'attr'=>[
-                    'class' => 'form-name'
-                ]
-            ])
-            ->add('Email',TextType::class,[
-                'attr'=>[
-                    'class' => 'form-email'
-                ]
-                
-            ])
-            ->add('Phone',TextType::class,[
-                'attr'=>[
-                    'class' => 'form-phone'
-                ]
-            ])
-            ->add('Type', ChoiceType::class, [
-
-                'choices' => [
-                    'Hotel' => 'HOTEL',
-                    'Pista' => 'PISTA',
-                    'Complemento' => 'COMPLEMENTO',
-                ],
-                'expanded' => false,
-            ],[
-                'attr'=>[
-                    'class' => 'form-type'
-                ]
-                
-            ])
-            ->add('Active', CheckboxType::class, [
-                'label' => 'Activo',
-                'required' => false, 
-                'attr'=>[
-                     'class' => 'form-active'
-                ],
-                'label_attr' => [
-                    'class' => 'checkbox-label',
-                ],
-            ])
-            ->add('Actualizar Proveedor',SubmitType::class, ['label' => 'Actualizar Proveedor'],[
-                'attr'=>[
-                     'class' => 'form-btn'
-                ]
-            ])
-            ->getForm();
+        $form = $this->makeForm("Actualizar Proveeder",$provider);
         
             if($req->isMethod('POST')){
 
@@ -202,14 +107,59 @@ class BaseController extends AbstractController
         $provider = $this->providerRepository->find($id);
         $this->providerRepository->remove($provider);
 
-        // $providers = $em->getRepository(Provider::class)->findAll();
-
-        // return $this->redirectToRoute('getProviders',[ 
-        //     'providers' => $providers
-        // ]);
-
         return $this->redirectToRoute('getProviders');
 
+    }
+
+
+    public function makeForm ($text,$provider) : Form{
+        return $form = $this->createFormBuilder(($provider))
+        ->add('Name',TextType::class,[
+            'attr'=>[
+                'class' => 'form-name'
+            ]
+        ])
+        ->add('Email',TextType::class,[
+            'attr'=>[
+                'class' => 'form-email'
+            ]
+            
+        ])
+        ->add('Phone',TextType::class,[
+            'attr'=>[
+                'class' => 'form-phone'
+            ]
+        ])
+        ->add('Type', ChoiceType::class, [
+
+            'choices' => [
+                'Hotel' => 'HOTEL',
+                'Pista' => 'PISTA',
+                'Complemento' => 'COMPLEMENTO',
+            ],
+            'expanded' => false,
+        ],[
+            'attr'=>[
+                'class' => 'form-type'
+            ]
+            
+        ])
+        ->add('Active', CheckboxType::class, [
+            'label' => 'Activo',
+            'required' => false, 
+            'attr'=>[
+                 'class' => 'form-active'
+            ],
+            'label_attr' => [
+                'class' => 'checkbox-label',
+            ],
+        ])
+        ->add($text,SubmitType::class, ['label' => $text],[
+            'attr'=>[
+                 'class' => 'form-btn'
+            ]
+        ])
+        ->getForm();
     }
 
     
